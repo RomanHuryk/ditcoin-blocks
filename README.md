@@ -43,24 +43,33 @@ The key features of the Onion Ditcoin Blockchain Explorer are:
  - no javascript, no cookies, no web analytics trackers, no images,
  - open sourced,
  - made fully in C++,
- - the only explorer showing encrypted payments ID,
- - the only explorer showing ring signatures,
- - the only explorer showing transaction extra field,
- - the only explorer showing public components of Ditcoin addresses,
- - the only explorer that can show which outputs and mixins belong to the given Ditcoin address and viewkey,
- - the only explorer that can be used to prove that you send Ditcoin to someone,
- - the only explorer showing detailed information about mixins, such as, mixins'
+ - showing encrypted payments ID,
+ - showing ring signatures,
+ - showing transaction extra field,
+ - showing public components of Ditcoin addresses,
+ - decoding which outputs and mixins belong to the given Ditcoin address and viewkey,
+ - can prove that you send Ditcoin to someone,
+ - detailed information about mixins, such as, mixins'
  age, timescale, mixin of mixins,
- - the only explorer showing number of amount output indices,
- - the only explorer supporting Ditcoin testnet network,
- - the only explorer providing tx checker and pusher for online pushing of transactions,
- - the only explorer able to estimate possible spendings based on address and viewkey,
- - the only explorer that can provide total amount of all miner fees.
+ - showing number of amount output indices,
+ - support Ditcoin testnet network,
+ - tx checker and pusher for online pushing of transactions,
+ - estimate possible spendings based on address and viewkey,
+ - can provide total amount of all miner fees.
+ - decoding encrypted payment id.
 
+
+## Development branch
+
+Current development branch, which includes support for sub-addresses is:
+
+ - https://github.com/ditcoin/ditcoin-blocks/tree/devel
+ 
+ 
 
 ## Compilation on Ubuntu 16.04
 
-##### Compile latest Ditcoin
+##### Compile latest Ditcoin release v0.15.x
 
 Download and compile recent Ditcoin release into your home folder:
 
@@ -68,7 +77,7 @@ Download and compile recent Ditcoin release into your home folder:
 # first install ditcoin dependecines
 sudo apt update
 
-sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev
+sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev
 
 # go to home folder 
 cd ~
@@ -78,7 +87,7 @@ git clone https://github.com/ditcoin/ditcoin-core
 cd ditcoin-core/
 
 # checkout last ditcoin version
-git checkout -b last_release v0.10.3.1
+git checkout -b last_release v0.15.0
 
 make
 ```
@@ -167,11 +176,9 @@ ditcoin-blocks, Onion Ditcoin Blockchain Explorer:
                                         page to mainnet explorer
   --no-blocks-on-index arg (=10)        number of last blocks to be shown on 
                                         index page
-  --network-info-timeout arg (=1000)    maximum time, in milliseconds, to wait 
-                                        for network info availability
   --mempool-info-timeout arg (=5000)    maximum time, in milliseconds, to wait 
                                         for mempool data for the front page
-  --mempool-refresh-time arg (=10)      time, in seconds, for each refresh of 
+  --mempool-refresh-time arg (=5)       time, in seconds, for each refresh of 
                                         mempool state
   -b [ --bc-path ] arg                  path to lmdb folder of the blockchain, 
                                         e.g., ~/.ditcoin/lmdb
@@ -264,7 +271,7 @@ The explorer has JSON api. For the API, it uses conventions defined by [JSend](h
 #### api/transaction/<tx_hash>
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/transaction/6093260dbe79fd6277694d14789dc8718f1bd54457df8bab338c2efa3bb0f03d"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/transaction/6093260dbe79fd6277694d14789dc8718f1bd54457df8bab338c2efa3bb0f03d"
 ```
 
 Partial results shown:
@@ -326,7 +333,7 @@ Transactions in last 25 blocks
 
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/transactions"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/transactions"
 ```
 
 Partial results shown:
@@ -376,7 +383,7 @@ Partial results shown:
 
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/transactions?page=2&limit=10"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/transactions?page=2&limit=10"
 ```
 
 Result analogical to the one above.
@@ -426,7 +433,7 @@ Partial results shown:
 Return all txs in the mempool.
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/mempool"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/mempool"
 ```
 
 Partial results shown:
@@ -469,7 +476,7 @@ if no specific limit given.
 Return number of newest mempool txs, e.g., only 10.
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/mempool?limit=10"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/mempool?limit=10"
 ```
 
 Result analogical to the one above.
@@ -477,7 +484,7 @@ Result analogical to the one above.
 #### api/search/<block_number|tx_hash|block_hash>
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/search/1293669"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/search/1293669"
 ```
 
 Partial results shown:
@@ -556,12 +563,12 @@ curl  -w "\n" -X GET "http://139.162.32.245:8081/api/outputs?txhash=17049bc5f2d9
 
 Proving transfer:
 
-We use recipient's address (i.e. not our address from which we sent xmr to recipient).
+We use recipient's address (i.e. not our address from which we sent dit to recipient).
 For the viewkey, we use `tx_private_key` (although the GET variable is still called `viewkey`) that we obtained by sending this txs. 
 
 ```bash
 # this is for testnet transaction 
-curl  -w "\n" -X GET "http://139.162.32.245:8082/api/outputs?txhash=94782a8c0aa8d8768afa0c040ef0544b63eb5148ca971a024ac402cad313d3b3&address=9wUf8UcPUtb2huK7RphBw5PFCyKosKxqtGxbcKBDnzTCPrdNfJjLjtuht87zhTgsffCB21qmjxjj18Pw7cBnRctcKHrUB7N&viewkey=e94b5bfc599d2f741d6f07e3ab2a83f915e96fb374dfb2cd3dbe730e34ecb40b&txprove=1"
+curl  -w "\n" -X GET "http://127.0.0.1:8082/api/outputs?txhash=94782a8c0aa8d8768afa0c040ef0544b63eb5148ca971a024ac402cad313d3b3&address=9wUf8UcPUtb2huK7RphBw5PFCyKosKxqtGxbcKBDnzTCPrdNfJjLjtuht87zhTgsffCB21qmjxjj18Pw7cBnRctcKHrUB7N&viewkey=e94b5bfc599d2f741d6f07e3ab2a83f915e96fb374dfb2cd3dbe730e34ecb40b&txprove=1"
 ```
 
 ```json
@@ -596,7 +603,7 @@ Result analogical to the one above.
 #### api/networkinfo
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/networkinfo"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/networkinfo"
 ```
 
 ```json
@@ -626,10 +633,65 @@ curl  -w "\n" -X GET "http://139.162.32.245:8081/api/networkinfo"
 }
 ```
 
+#### api/outputsblocks
+
+Search for our outputs in last few blocks (up to 5 blocks), using provided address and viewkey. 
+
+
+```bash
+# testnet address
+curl  -w "\n" -X GET http://127.0.0.1:8081/api/outputsblocks?address=9sDyNU82ih1gdhDgrqHbEcfSDFASjFgxL9B9v5f1AytFUrYsVEj7bD9Pyx5Sw2qLk8HgGdFM8qj5DNecqGhm24Ce6QwEGDi&viewkey=807079280293998634d66e745562edaaca45c0a75c8290603578b54e9397e90a&limit=5&mempool=1
+```
+
+Example result:
+
+```json
+{
+{
+  "data": {
+    "address": "0182d5be0f708cecf2b6f9889738bde5c930fad846d5b530e021afd1ae7e24a687ad50af3a5d38896655669079ad0163b4a369f6c852cc816dace5fc7792b72f",
+    "height": 960526,
+    "limit": "5",
+    "mempool": true,
+    "outputs": [
+      {
+        "amount": 33000000000000,
+        "block_no": 0,
+        "in_mempool": true,
+        "output_idx": 1,
+        "output_pubkey": "2417b24fc99b2cbd9459278b532b37f15eab6b09bbfc44f9d17e15cd25d5b44f",
+        "payment_id": "",
+        "tx_hash": "9233708004c51d15f44e86ac1a3b99582ed2bede4aaac6e2dd71424a9147b06f"
+      },
+      {
+        "amount": 2000000000000,
+        "block_no": 960525,
+        "in_mempool": false,
+        "output_idx": 0,
+        "output_pubkey": "9984101f5471dda461f091962f1f970b122d4469077aed6b978a910dc3ed4576",
+        "payment_id": "0000000000000055",
+        "tx_hash": "37825d0feb2e96cd10fa9ec0b990ac2e97d2648c0f23e4f7d68d2298996acefd"
+      },
+      {
+        "amount": 96947454120000,
+        "block_no": 960525,
+        "in_mempool": false,
+        "output_idx": 1,
+        "output_pubkey": "e4bded8e2a9ec4d41682a34d0a37596ec62742b28e74b897fcc00a47fcaa8629",
+        "payment_id": "0000000000000000000000000000000000000000000000000000000000001234",
+        "tx_hash": "4fad5f2bdb6dbd7efc2ce7efa3dd20edbd2a91640ce35e54c6887f0ee5a1a679"
+      }
+    ],
+    "viewkey": "807079280293998634d66e745562edaaca45c0a75c8290603578b54e9397e90a"
+  },
+  "status": "success"
+}
+```
+
 #### api/emission
 
 ```bash
-curl  -w "\n" -X GET "http://139.162.32.245:8081/api/emission"
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/emission"
 ```
 
 ```json
@@ -645,6 +707,34 @@ curl  -w "\n" -X GET "http://139.162.32.245:8081/api/emission"
 
 Emission only works when the emission monitoring thread is enabled.
 
+#### api/version
+
+```bash
+curl  -w "\n" -X GET "http://127.0.0.1:8081/api/version"
+```
+
+```json
+{
+  "data": {
+    "api": 65536, 
+    "blockchain_height": 1357031,
+    "git_branch_name": "update_to_current_ditcoin",
+    "last_git_commit_date": "2017-07-25",
+    "last_git_commit_hash": "a549f25",
+    "ditcoin_version_full": "0.10.3.1-ab594cfe"
+  },
+  "status": "success"
+}
+```
+
+api number is store as `uint32_t`. In this case `65536` represents 
+major version 1 and minor version 0.
+In JavaScript to get these numbers, one can do as follows:
+
+```javascript
+var api_major = response.data.api >> 16;
+var api_minor = response.data.api & 0xffff;
+```
 
 #### api/rawblock/<block_number|block_hash>
 
