@@ -1136,7 +1136,7 @@ namespace xmreg
 
         // get the tx output public key
         // that normally would be generated for us,
-        // if someone had sent us some dtc.
+        // if someone had sent us some dit.
         public_key pubkey;
 
         derive_public_key(derivation,

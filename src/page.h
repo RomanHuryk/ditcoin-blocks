@@ -149,7 +149,7 @@ namespace xmreg
         // key images of inputs
         vector<txin_to_key> input_key_imgs;
 
-        // public keys and dtc amount of outputs
+        // public keys and dit amount of outputs
         vector<pair<txout_to_key, uint64_t>> output_pub_keys;
 
         mstch::map
@@ -1145,7 +1145,7 @@ namespace xmreg
             context["sum_fees"]
                     = xmreg::xmr_amount_to_str(sum_fees, "{:0.6f}", "0");
 
-            // get dtc in the block reward
+            // get dit in the block reward
             context["blk_reward"]
                     = xmreg::xmr_amount_to_str(txd_coinbase.xmr_outputs - sum_fees, "{:0.6f}");
 
@@ -1460,7 +1460,7 @@ namespace xmreg
             if (!xmreg::parse_str_address(xmr_address_str,  address, testnet))
             {
                 cerr << "Cant parse string address: " << xmr_address_str << endl;
-                return string("Cant parse dtc address: " + xmr_address_str);
+                return string("Cant parse dit address: " + xmr_address_str);
             }
 
             // parse string representing given private key
@@ -1685,7 +1685,7 @@ namespace xmreg
 
                 // get the tx output public key
                 // that normally would be generated for us,
-                // if someone had sent us some dtc.
+                // if someone had sent us some dit.
                 public_key tx_pubkey;
 
                 derive_public_key(derivation,
@@ -1757,7 +1757,7 @@ namespace xmreg
 
             vector<txin_to_key> input_key_imgs = xmreg::get_key_images(tx);
 
-            // to hold sum of dtc in matched mixins, those that
+            // to hold sum of dit in matched mixins, those that
             // perfectly match mixin public key with outputs in mixn_tx.
             uint64_t sum_mixin_xmr {0};
 
@@ -1940,7 +1940,7 @@ namespace xmreg
 
                         // get the tx output public key
                         // that normally would be generated for us,
-                        // if someone had sent us some dtc.
+                        // if someone had sent us some dit.
                         public_key tx_pubkey_generated;
 
                         derive_public_key(derivation,
@@ -2690,7 +2690,7 @@ namespace xmreg
                     // mark that we have signed tx data for use in mstch
                     tx_context["have_raw_tx"] = true;
 
-                    // provide total mount of inputs dtc
+                    // provide total mount of inputs dit
                     tx_context["inputs_xmr_sum"] = xmreg::xmr_amount_to_str(inputs_xmr_sum);
 
                     // get reference to inputs array created of the tx
@@ -3093,7 +3093,7 @@ namespace xmreg
 
             }
 
-            // get dtc address stored in this key image file
+            // get dit address stored in this key image file
             const account_public_address* xmr_address =
                     reinterpret_cast<const account_public_address*>(
                             decoded_raw_data.data());
@@ -3221,7 +3221,7 @@ namespace xmreg
             // header is public spend and keys
             const size_t header_lenght    = 2 * sizeof(crypto::public_key);
 
-            // get dtc address stored in this key image file
+            // get dit address stored in this key image file
             const account_public_address* xmr_address =
                     reinterpret_cast<const account_public_address*>(
                             decoded_raw_data.data());
@@ -4638,7 +4638,7 @@ namespace xmreg
 
                 // get the tx output public key
                 // that normally would be generated for us,
-                // if someone had sent us some dtc.
+                // if someone had sent us some dit.
                 public_key tx_pubkey;
 
                 derive_public_key(derivation,
@@ -5736,7 +5736,7 @@ namespace xmreg
             txd.pk = xmreg::get_tx_pub_key_from_received_outs(tx);
 
 
-            // sum dtc in inputs and ouputs in the given tx
+            // sum dit in inputs and ouputs in the given tx
             const array<uint64_t, 4>& sum_data = summary_of_in_out_rct(
                     tx, txd.output_pub_keys, txd.input_key_imgs);
 

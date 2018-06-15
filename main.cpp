@@ -299,7 +299,7 @@ main(int ac, const char* av[])
             || post_body.count("viewkey") == 0
             || post_body.count("tx_hash") == 0)
         {
-            return string("dtc address, viewkey or tx hash not provided");
+            return string("dit address, viewkey or tx hash not provided");
         }
 
         string tx_hash     = post_body["tx_hash"];
@@ -338,7 +338,7 @@ main(int ac, const char* av[])
                 || post_body.count("txprvkey") == 0
                 || post_body.count("txhash") == 0)
             {
-                return string("dtc address, tx private key or "
+                return string("dit address, tx private key or "
                                       "tx hash not provided");
             }
 
